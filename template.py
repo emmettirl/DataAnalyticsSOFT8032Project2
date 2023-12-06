@@ -199,32 +199,35 @@ def task5():
     
     
 def task6():
-    
     """
     your code
     """
     moviesDf = pd.read_csv("movies.csv")
 
-    
-    # I will create a query which checks if there is a correlation between the number of films a director creates per year, and the mean rating. 
-    # This is to check if quality over quantity holds true. 
-    
+    # I will create a query which checks if there is a correlation between the number of films a director creates per year, and the mean rating.
+    # This is to check if quality over quantity holds true.
+
     # Get the director's name from 'Cast Column. The column has multiple values separated by '|'
-    moviesDf['Director'] = moviesDf['Cast'].str.split('|').str.get(0).str.replace('Director:', '').str.split(',').str.get(0).str.strip()
-    
-    directorStats = moviesDf.groupby(['Director', 'Release Year']).agg({'Title': 'count', 'Rating': 'mean'}).reset_index()
-    directorStats.rename(columns={'Title': 'Films', 'Rating': 'Rating'})
-    
-    #find correlation
-    correlation = directorStats['Number of Films'].corr(directorStats['Average Rating'])
+    moviesDf['Director'] = moviesDf['Cast'].str.split('|').str.get(0).str.replace('Director:', '').str.split(
+        ',').str.get(0).str.strip()
+
+    directorStats = moviesDf.groupby(['Director', 'Release Year']).agg(
+        {'Title': 'count', 'Rating': 'mean'}).reset_index()
+    directorStats = directorStats.rename(columns={
+        'Title': 'Films'})  # This line was not correctly assigning the updated dataframe. It was just running the rename function, the renames were also not updated to match the final version.
+
+    # directorStats.to_csv("test.csv") # for debugging
+
+    # find correlation
+    correlation = directorStats['Films'].corr(directorStats['Rating'])  # This line was using the wrong column name.
     print("Correlation between the number of films and average rating: ", correlation)
-    
-    #scatterplot
+
+    # scatterplot
     plt.scatter(directorStats['Films'], directorStats['Rating'], alpha=0.5)
-    
-    # From the result of -0.08195401149349008, there does not seem to be signifigant evidance of a positive or negative relationship. 
+
+    # From the result of -0.08195401149349008, there does not seem to be signifigant evidance of a positive or negative relationship.
     # there are some extreme outliers however, which may indicate a mistake in logic
-    
+
     plt.title('Number of Films vs. Average Rating by Director and Year')
     plt.xlabel('Number of Films')
     plt.ylabel('Average Rating')
